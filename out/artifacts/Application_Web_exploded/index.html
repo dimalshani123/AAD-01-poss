@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<h1>Customer Form</h1>
+
+<section id="customer_manage" class="content">
+    <form id="customerForm">
+        <div class="mb-3">
+            <label for="customerId" class="form-label">Customer ID</label>
+            <input type="text" class="form-control" id="customerId" placeholder="Enter customer id" required>
+        </div>
+        <div class="mb-3">
+            <label for="customerName" class="form-label">Customer Name</label>
+            <input type="text" class="form-control" id="customerName" placeholder="Enter customer name" required>
+        </div>
+        <div class="mb-3">
+            <label for="customerAddress" class="form-label">Customer Address</label>
+            <input type="text" class="form-control" id="customerAddress" placeholder="Enter customer address" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Add Customer</button>
+    </form>
+
+    <div class="mt-4">
+        <button class="btn btn-success" onclick="updateCustomer()" id="updateBtn">Update Customer</button>
+        <button class="btn btn-danger" onclick="unregisterCustomer()">Delete Customer</button>
+        <button type="submit" class="btn btn-primary" id="loadBtn">Load Customer</button>
+    </div>
+
+    <!-- Table to display customers -->
+    <table class="table table-striped mt-4">
+        <thead>
+        <tr>
+            <th>Customer ID</th>
+            <th>Customer Name</th>
+            <th>Address</th>
+        </tr>
+        </thead>
+        <tbody id="customerTableBody">
+        <!-- Dynamic rows go here -->
+        </tbody>
+    </table>
+</section>
+
+<script src="js/jquery-3.7.1.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+
+<script>
+
+    const fetchCustomerData = () =>{
+        $.ajax({
+            url: `http://localhost:8080/Application_Web_exploded/customer`,
+            type: "GET",
+
+            success: (res) =>{
+                res.forEach(customer =>{
+                    $('#customerTableBody').append(`<tr>
+                           <td>${customer.id}</td>
+                           <td>${customer.name}</td>
+                           <td>${customer.address}</td>
+                   </tr>`)
+                })
+            },
+            error: (err) =>{
+                console.error(err);
+            }
+        })
+    }
+
+    $('#loadBtn').click((e) => {
+        fetchCustomerData()
+    })
+
+
+    $('#saveBtn').click((e) =>{
+
+        e.preventDefault()
+        const customer_id = $('#customerId').val();
+        const customer_name = $('#customerName').val();
+        const customer_address = $('#customerAddress').val();
+
+        $.ajax({
+            url:`http://localhost:8080/Application_Web_exploded/customer`,
+            type: "POST",
+
+            data: {
+                id: customer_id,
+                name: customer_name,
+                address: customer_address
+            },
+
+            success:(res)=>{
+                alert("Customer saved!")
+                fetchCustomerData();
+            },
+            error:(err)=> {
+                alert("Customer not saved!")
+            }
+        })
+    })
+</script>
+</body>
+</html>
